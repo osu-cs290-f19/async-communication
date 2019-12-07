@@ -1,4 +1,5 @@
 var path = require('path');
+var fs = require('fs');
 var express = require('express');
 var exphbs = require('express-handlebars');
 var bodyParser = require('body-parser');
@@ -44,7 +45,17 @@ app.post('/people/:person/addPhoto', function (req, res, next) {
         caption: req.body.caption
       });
       console.log("== peopleData[person]:", peopleData[person]);
-      res.send();
+      fs.writeFile(
+        __dirname + '/peopleData.json',
+        JSON.stringify(peopleData, 2, null),
+        function (err) {
+          if (!err) {
+            res.status(200).send();
+          } else {
+            res.status(500).send("Failed to write data on server side.");
+          }
+        }
+      );
     } else {
       res.status(400).send("Request body needs url and caption.");
     }
